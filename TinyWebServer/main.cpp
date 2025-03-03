@@ -3,21 +3,21 @@
 int main(int argc, char *argv[])
 {
 	// 需要修改的数据库信息, 登录名，密码，库名
-	string user = "root";
-	string passwd = "root";
-	string database_name = "qgydb";
+	string user = "wh";
+	string password = "The_Beat1es";
+	string database_name = "userdb";
 
 	// 命令行解析
 	Config config;
 	config.parse_arg(argc, argv);
 
-	Webserver server;
+	WebServer server;
 
 	// 初始化
 	
-	server.init(config.PORT, user, passwd, databse_name, config.LOGWriter,
-				config.OPT_LINGER, config.TRIGMode, config.sql_num, config.thread_num,
-				config.close_log, config.actor_model);
+	server.init(config.m_port, user, password, database_name, config.m_log_write,
+				config.m_opt_linger, config.m_trig_mode, config.m_sql_num, config.m_thread_num,
+				config.m_close_log, config.m_actor_mode);
 
 	// 日志
 	server.log_write();
@@ -32,10 +32,10 @@ int main(int argc, char *argv[])
 	server.trig_mode();
 
 	// 监听
-	server.eventListen();
+	server.event_listen();
 
 	// 运行
-	server.eventLoop();
+	server.event_loop();
 
 	return 0;
 }

@@ -2,82 +2,86 @@
 
 Config::Config()
 {
-	// 端口号, 默认9006
-	PORT = 9006;
+    // 端口号，默认 9006
+    m_port = 9006;
 
-	// 日志写入方式，默认同步
-	LOGWrite = 0;
+    // 日志写入方式，默认同步写入
+    m_log_write = 0;
 
-	// 触发组合模式，默认 listenfd LT + connfd LT
-	TRIGMode = 0;
+    // 触发组合模式, 默认 监听套接字为LT, 连接套接字也为LT
+    m_trig_mode = 0;
+    m_listen_trig_mode = 0;
+    m_conn_trig_mode = 0;
 
-	// listenfd 触发模式, 默认 LT
-	LISTENTrigmode = 0;
+    // 优雅关闭连接，默认不使用
+    m_opt_linger = 0;
 
-	// connfd 触发模式, 默认 LT
-	CONNTrigmode = 0;
+    // 数据库线程池内的连接数量
+    m_sql_num = 8;
 
-	// 优雅关闭链接，默认不使用
-	OPT_LINGER = 0;
+    // 线程池内的线程数量
+    m_thread_num = 8;
 
-	// 数据库连接池数量，默认8
-	sql_num = 8;
+    // 关闭日志，默认不关闭
+    m_close_log = 0;
 
-	// 线程池内的线程数量，默认8
-	thread = 8;
-
-	// 关闭日志，默认不关闭
-	close_log = 0;
-
-	// 并发模式，默认是 proactor
-	actor_mode = 0;
+    // 并发模型，默认是 proactor
+    m_actor_mode = 0;
 }
 
-void Config::parse_arg(int argc, char*argv[]){
+void Config::parse_arg(int argc, char *argv[])
+{
     int opt;
     const char *str = "p:l:m:o:s:t:c:a:";
+    // getopt() 用于解析命令行参数
+    // 识别以 - 或 -- 开头的选项
+    // optarg 是参数内部定义的全局变量，声明在 <unistd.h> 中; extern char *optarg
+    // int getopt(int argc, char *const argv[], const char *optstring)
+    // 命令行参数个数(main函数的argc), 命令行参数数组(main函数的argv)
+    // optstring: 选项字符串, -p, -l, -s ...
+    // 选项结束返回 -1
     while ((opt = getopt(argc, argv, str)) != -1)
     {
         switch (opt)
         {
         case 'p':
         {
-            PORT = atoi(optarg);
+            m_port = atoi(optarg);
             break;
         }
         case 'l':
         {
-            LOGWrite = atoi(optarg);
+            m_log_write = atoi(optarg);
             break;
         }
         case 'm':
         {
-            TRIGMode = atoi(optarg);
+            m_trig_mode = atoi(optarg);
             break;
         }
         case 'o':
         {
-            OPT_LINGER = atoi(optarg);
+            m_opt_linger = atoi(optarg);
             break;
         }
         case 's':
         {
-            sql_num = atoi(optarg);
+            m_sql_num = atoi(optarg);
             break;
         }
         case 't':
         {
-            thread_num = atoi(optarg);
+            m_thread_num = atoi(optarg);
             break;
         }
         case 'c':
         {
-            close_log = atoi(optarg);
+            m_close_log = atoi(optarg);
             break;
         }
         case 'a':
         {
-            actor_model = atoi(optarg);
+            m_actor_mode = atoi(optarg);
             break;
         }
         default:
