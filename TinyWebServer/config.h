@@ -5,43 +5,24 @@
 
 using namespace std;
 
-class Config
+class Config 
 {
 public:
-	Config();
-	~Config() { };
+    Config();
+    ~Config() {};
 
-	void parse_arg(int argc, char* argv[]);
+    void parse_arg(int argc, char *argv[]);
 
-	// 端口号
-	int PORT;
-
-	// 日志写入方式
-	int LOGWrite;
-
-	// 触发组合模式
-	int TRIGMode;
-
-	// listenfd 触发模式
-	int LISTENTrigmode;
-
-	// connfd 触发模式
-	int CONNTrigmode;
-
-	// 优雅关闭链接
-	int OPT_LINGER;
-
-	// 数据库连接池数量
-	int sql_num;
-
-	// 线程池内的线程数量
-	int thread_num;
-
-	// 是否关闭日志
-	int close_log;
-
-	// 并发模型选择
-	int actor_model;
+    int m_port;             // 端口号
+    int m_log_write;        // 日志写入方式 同步/异步
+    int m_trig_mode;        // 触发模式 ET LT
+    int m_listen_trig_mode; // 监听套接字触发方式
+    int m_conn_trig_mode;   // 连接套接字触发方式
+    int m_opt_linger;         // 优雅关闭连接
+    int m_sql_num;            // 数据库连接池数量
+    int m_thread_num;         // 线程池内的线程数
+    int m_close_log;          // 是否关闭日志
+    int m_actor_mode;         // 并发模型选择
 };
 
 #endif

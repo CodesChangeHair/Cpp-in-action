@@ -1,4 +1,17 @@
+<<<<<<< HEAD
 *.o
 *.a
 *.so
 *.out
+=======
+# 忽略所有可执行文件
+*
+Learn_EpollServer-main/*
+!*/
+!*.cpp
+!*.h
+!*.txt
+!*.md
+!*.gitignore
+
+>>>>>>> new-branch
