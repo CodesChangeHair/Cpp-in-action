@@ -6,7 +6,6 @@
 =======
 # 忽略所有可执行文件
 *
-Learn_EpollServer-main/*
 !*/
 !*.cpp
 !*.h
