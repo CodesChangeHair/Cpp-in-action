@@ -68,17 +68,23 @@ int set_nonblocking(int fd)
 // 将 fd 注册到 epoll 内核事件表中，ET模式，选择开启 EPOLL ONESHOT
 void addfd(int epoll_fd, int fd, bool one_shot, int trig_mode)
 {
-    epoll_event event;
-    event.data.fd = fd;
+    epoll_event event;      // epoll 事件
+    event.data.fd = fd;     // 绑定文件描述符
 
     if (trig_mode == 1)
+        // EPOLLIN: 监听可读事件，当 fd 可读时触发
+        // EPOLLRDHUP: 对端关闭连接时触发
+        // EPOLLET: ET边缘触发模式
         event.events = EPOLLIN | EPOLLET | EPOLLRDHUP;
-    else 
+    else    // 默认为水平触发LT模式
         event.events = EPOLLIN | EPOLLRDHUP;
     
+    // EPOLLONESHOT: 保证 socket 连接在任意时刻只被一个线程处理
     if (one_shot)
         event.events |= EPOLLONESHOT;
     
+    // 向 epoll 实例(epoll_fd)中添加(CTL_ADD)需要监听的文件描述符fd,
+    // event指定epoll事件(读/写/ET...)
     epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &event);
 
     set_nonblocking(fd);
@@ -216,12 +222,15 @@ HttpConn::LINE_STATUS HttpConn::parse_line()
 bool HttpConn::read_once()
 {
     // m_read_idx: 读取的位置 大于 缓冲区大小 
+    // 如果读缓冲区已满，退出
     if (m_read_idx >= READ_BUFFER_SIZE)
         return false;
     
     int bytes_read = 0;
 
-    // LT 读取数据
+    // LT 读取数据, 只要数据仍然可读，epoll就会不断触发，因此可以直接使用阻塞读取,
+    // 数据可以分多次读取
+    // 适用于阻塞I/O，避免CPU轮询
     if (m_trig_mode == 0)
     {
         // 从套接字接收数据，存储在m_read_buf缓冲区中,
@@ -234,15 +243,17 @@ bool HttpConn::read_once()
         else 
             return true;
     }
-    // 非阻塞 ET 工作模式下，需要一次性将数据读完
-    else 
+    // 非阻塞 ET 工作模式下，epoll 只会在数据初次可读(跳变的边缘)时触发一次事件
+    // 因此需要循环读取直到数据被读完，一次触发，也就需要一次处理完毕
+    // 防止数据残留导致读不到完整数据
+    // 适用于非阻塞IO，减少epoll调用，提高性能
     {
         while (true)
         {
             bytes_read = recv(m_sockfd, m_read_buf + m_read_idx, READ_BUFFER_SIZE - m_read_idx, 0);
             if (bytes_read == -1)
             {
-                // 
+                // 这两错误代码表示 非阻塞读取中 当前无数据可读
                 if (errno == EAGAIN || errno == EWOULDBLOCK)
                     break;
                 else 

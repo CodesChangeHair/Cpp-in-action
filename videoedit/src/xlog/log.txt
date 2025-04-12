@@ -1,0 +1,5 @@
+2025-04-09 16:47:53 debug log info test_log.cpp: 24
+2025-04-10 09:14:43 debug debug test_log.cpp: 18
+2025-04-10 09:14:43 info info test_log.cpp: 19
+2025-04-10 09:14:43 error error test_log.cpp: 20
+2025-04-10 09:14:43 fatal fatal test_log.cpp: 21

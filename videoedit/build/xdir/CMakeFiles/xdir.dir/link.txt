@@ -1,0 +1,2 @@
+/usr/bin/ar qc /home/wh/project/cpp-in-action/videoedit/lib/libxdir.a CMakeFiles/xdir.dir/xdir.cpp.o
+/usr/bin/ranlib /home/wh/project/cpp-in-action/videoedit/lib/libxdir.a

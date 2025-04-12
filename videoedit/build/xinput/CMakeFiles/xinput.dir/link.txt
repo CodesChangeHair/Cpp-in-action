@@ -1,0 +1,2 @@
+/usr/bin/ar qc /home/wh/project/cpp-in-action/videoedit/lib/libxinput.a CMakeFiles/xinput.dir/user_input.cpp.o CMakeFiles/xinput.dir/xvideo_input.cpp.o
+/usr/bin/ranlib /home/wh/project/cpp-in-action/videoedit/lib/libxinput.a
