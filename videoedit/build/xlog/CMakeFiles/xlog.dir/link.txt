@@ -1,0 +1,2 @@
+/usr/bin/ar qc /home/wh/project/cpp-in-action/videoedit/lib/libxlog.a CMakeFiles/xlog.dir/log_console_output.cpp.o CMakeFiles/xlog.dir/log_file_output.cpp.o CMakeFiles/xlog.dir/xlog_format.cpp.o CMakeFiles/xlog.dir/xconfig.cpp.o CMakeFiles/xlog.dir/logger.cpp.o CMakeFiles/xlog.dir/log_factory.cpp.o
+/usr/bin/ranlib /home/wh/project/cpp-in-action/videoedit/lib/libxlog.a

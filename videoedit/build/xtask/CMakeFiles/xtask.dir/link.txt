@@ -1,0 +1,2 @@
+/usr/bin/ar qc /home/wh/project/cpp-in-action/videoedit/lib/libxtask.a CMakeFiles/xtask.dir/fftask.cpp.o CMakeFiles/xtask.dir/xtask_factory.cpp.o
+/usr/bin/ranlib /home/wh/project/cpp-in-action/videoedit/lib/libxtask.a

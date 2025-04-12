@@ -59,6 +59,15 @@ ThreadPool<T>::ThreadPool(int actor_mode, ConnectionPool *conn_pool, int thread_
     for (int i = 0; i < m_thread_number; ++ i)
     {
         // 创建线程出错
+        // 创建线程，运行 worker()方法， 使得线程不断循环等待任务并执行任务
+        // 若当前没有任务，则工作线程进入阻塞状态
+        // 当 append() 添加任务时，会执行 post() 增加信号量，通知被阻塞的线程
+        // 线程会从 wait() 处恢复运行
+        // 线程的阻塞状态涉及CPU的线程调度和状态切换
+        // 运行态，就绪态，阻塞态，创建态，终止态
+        // 当线程调用 m_queue_stat.wait() 
+        // 线程被标记为阻塞态Blcoked，从CPU上移除，加入等待队列
+        // CPU选择另一个就绪线程运行，完成上下文切换
         if (pthread_create(m_threads + i, NULL, worker, this) != 0)
         {
             printf("pthread_create() error");
@@ -84,9 +93,11 @@ ThreadPool<T>::~ThreadPool()
     delete[] m_threads;
 }
 
+// append()向工作队列添加任务
 template <typename T>
 bool ThreadPool<T>::append(T *request, int state)
 {
+    // 工作队列是共享资源，对齐读/写之前需要加锁
     m_queue_locker.lock();
     // 工作队列已满
     if (m_work_queue.size() >= m_max_requests)
@@ -99,6 +110,7 @@ bool ThreadPool<T>::append(T *request, int state)
     m_work_queue.push_back(request);
     
     m_queue_locker.unlock();
+    // 对信号量 + 1, 相当于向线程池中的工作线程发出信号，表示有任务需要处理
     m_queue_stat.post();  
 }
 
@@ -132,7 +144,9 @@ void ThreadPool<T>::run()
 {
     while (true)
     {
-        m_queue_stat.wait();
+        // 若信号量<=0(初始或运行时)，表示工作队列为空， 阻塞当前工作线程
+        // 只有当 append()调用 post() 时，线程被唤醒
+        m_queue_stat.wait();    
         m_queue_locker.lock();
         if (m_work_queue.empty())
         {
